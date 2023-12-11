@@ -1,0 +1,104 @@
+import sqlite3
+from random import randint
+import random
+cities = [
+    "Москва",
+    "Санкт-Петербург",
+    "Новосибирск",
+    "Екатеринбург",
+    "Нижний Новгород",
+    "Казань",
+    "Челябинск",
+    "Омск",
+    "Самара",
+    "Ростов-на-Дону",
+    "Уфа",
+    "Красноярск",
+    "Пермь",
+    "Воронеж",
+    "Волгоград"
+]
+streets = [
+    "Пресненская набережная",
+    "Тверская улица",
+    "Арбатская улица",
+    "Невский проспект",
+    "Красная площадь",
+    "Ленинградский проспект",
+    "Большая Садовая улица",
+    "Красноармейская улица",
+    "Кутузовский проспект",
+    "Горьковская улица",
+    "Никольская улица",
+    "Тверской бульвар",
+    "Арбатский переулок",
+    "Моховая улица",
+    "Жуков проезд"
+]
+# Фамилии
+name1 = ["Иванов", "Петров", "Сидоров", "Михайлов", "Кузнецов"]
+
+# Имена
+name2 = ["Иван", "Александр", "Петр", "Андрей", "Дмитрий"]
+
+# Отчества
+name3 = ["Иванович", "Александрович", "Андреевич", "Сергеевич", "Петрович"]
+try:
+    conn = sqlite3.connect('kr\db.sqlite3')
+    cursor = conn.cursor()
+    n = 0
+    # заполнение надвижимости
+    for i in range(50):
+        id = str(randint(1000000000, 9999999999))
+        city = cities[randint(0, 14)]
+        address = streets[randint(0, 14)] + ", д. " + str(randint(1, 50))
+        library_code = str(randint(1000000000000, 9999999999999))
+        square = randint(50, 250)
+        if square > 150 and square < 251:
+            price = str(randint(200, 500))
+            type = random.choice(["Апартаменты", "Лофт", "Жилой дом"])
+        elif square > 100 and square < 201:
+            price = str(randint(100, 200))
+            type = random.choice(["Квартира", "Лофт", "Жилой дом"])
+        elif square > 49 and square < 101:
+            price = str(randint(50, 100))
+            type = random.choice(["Квартира", "Лофт"])
+        price += "000"
+        square = str(square)
+        user_id = str(randint(1000000000, 9999999999))
+        insert_query = "INSERT INTO myapp_realty (id, type, city, address, square, price, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)"
+        cursor.execute(insert_query, (id, type, city, address, square, price, user_id))
+        n += 1
+        x = (n//25)%5
+        y = (n//5)%5
+        z = n%5
+        name_full = name1[x] + " " + name2[y] + " " + name3[z]
+        id = user_id
+        phone = "8926" + str(randint(1000000, 9999999))
+        password = str(randint(1000000000, 9999999999))
+        insert_query = "INSERT INTO myapp_users (id, name_full, phone, password) VALUES (?, ?, ?, ?)"
+        cursor.execute(insert_query, (id, name_full, phone, password))
+        
+    # заполнение пользователей
+    for i in range (n, 125):
+        x = (i//25)%5
+        y = (i//5)%5
+        z = i%5
+        name_full = name1[x] + " " + name2[y] + " " + name3[z]
+        id = str(randint(1000000000, 9999999999))
+        phone = "8926" + str(randint(1000000, 9999999))
+        password = str(randint(1000000000, 9999999999))
+        insert_query = "INSERT INTO myapp_users (id, name_full, phone, password) VALUES (?, ?, ?, ?)"
+        cursor.execute(insert_query, (id, name_full, phone, password))
+    
+    # заполнение избранного
+    
+    
+    
+    
+    
+    conn.commit()
+    conn.close()
+
+except Exception as ex:
+    print("Возникла ошибка:", ex)
